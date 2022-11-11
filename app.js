@@ -38,22 +38,32 @@ const gameBoard = (() => {
     cells.forEach((element) => {
       element.addEventListener("click", play);
     });
+    displayPlayerTurn();
   };
   const cells = document.querySelectorAll("td");
   const restartBtn = document.querySelector("button");
   const message = document.querySelector(".message");
+  let playerName = playerO;
   restartBtn.addEventListener("click", restart);
+
   const checkWinner = () => {
     winnerCombination.forEach((e) => {
       if (e.every((i) => playerName.getScore().includes(i))) {
-        message.innerHTML = `<h3>Player ${playerName.getName()} won in the ${round} round!</h3>`;
+        const winnerMessage = `<h3>Player ${playerName.getName()} won in the ${round} round!</h3>`;
+
+        message.innerHTML = winnerMessage;
         cells.forEach((element) => {
           element.removeEventListener("click", play);
         });
       }
     });
   };
-  let playerName = playerO;
+
+  const displayPlayerTurn = () => {
+    const currentPlayerMessage =
+      playerName.getName() === "X" ? `<h3>Turn: O</h3>` : `<h3>Turn: X</h3>`;
+    message.innerHTML = currentPlayerMessage;
+  };
 
   const play = (e) => {
     if (!e.target.textContent) {
@@ -61,7 +71,7 @@ const gameBoard = (() => {
       e.target.textContent = playerName.getName();
       playerName.move(parseInt(e.target.id, 10));
       round++;
-      console.log(playerName.getScore(), round);
+      displayPlayerTurn();
       checkWinner();
     } else {
       alert("No, no, no!");
@@ -70,6 +80,8 @@ const gameBoard = (() => {
   cells.forEach((element) => {
     element.addEventListener("click", play);
   });
+
+  return { displayPlayerTurn };
 })();
 
-console.log(playerX.getScore(), playerO.getScore());
+window.addEventListener("load", gameBoard.displayPlayerTurn);
